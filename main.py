@@ -48,3 +48,13 @@ app = ApplicationBuilder().token(BOT_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CallbackQueryHandler(button_handler))
 app.run_polling()
+from telegram.ext import MessageHandler, filters
+
+async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    video = update.message.video
+    if video:
+        await update.message.reply_text(f"🎬 File ID:\n{video.file_id}")
+    else:
+        await update.message.reply_text("❌ این پیام شامل ویدئو نیست.")
+
+app.add_handler(MessageHandler(filters.VIDEO, get_file_id))
