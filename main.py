@@ -14,3 +14,29 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 app = ApplicationBuilder().token(BOT_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.run_polling()
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import os
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    buttons = [
+        [InlineKeyboardButton("🎬 دریافت فیلم", callback_data="get_film")],
+        [InlineKeyboardButton("📞 تماس با ما", url="https://t.me/mts9788")]
+    ]
+    keyboard = InlineKeyboardMarkup(buttons)
+    await update.message.reply_text("سلام! لطفاً یکی از گزینه‌های زیر را انتخاب کنید:", reply_markup=keyboard)
+
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == "get_film":
+        await query.message.reply_text("🎬 لینک فیلم: https://example.com/film.mp4")
+
+app = ApplicationBuilder().token(BOT_TOKEN).build()
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("help", start))  # اختیاری
+app.add_handler(telegram.ext.CallbackQueryHandler(button_handler))
+app.run_polling()
